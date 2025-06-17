@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\Subject;
 
 class SubjectTableSeeder extends Seeder
 {
@@ -13,55 +12,49 @@ class SubjectTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('subjects')->insert([
+        $subjects = [
             [
                 'subject_code' => 'AP',
                 'subject_name' => 'Araling Panlipunan',
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
                 'subject_code' => 'ESP',
                 'subject_name' => 'Edukasyon sa Pagpapakatao',
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
                 'subject_code' => 'ENGL',
                 'subject_name' => 'English',
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
                 'subject_code' => 'FIL',
                 'subject_name' => 'Filipino',
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
                 'subject_code' => 'MATH',
                 'subject_name' => 'Mathematics',
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
                 'subject_code' => 'SCI',
                 'subject_name' => 'Science',
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
                 'subject_code' => 'TLE',
-                'subject_name' => 'TLE',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'subject_name' => 'Technology and Livelihood Education',
             ],
             [
                 'subject_code' => 'MAPEH',
-                'subject_name' => 'Mapeh',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'subject_name' => 'Music, Arts, Physical Education, and Health',
             ],
-        ]);
+        ];
+
+        foreach ($subjects as $subjectData) {
+            Subject::updateOrCreate(
+                ['subject_code' => $subjectData['subject_code']],
+                array_merge($subjectData, [
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ])
+            );
+        }
     }
 }

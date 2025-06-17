@@ -2,9 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
+use App\Models\Teacher;
+use App\Models\Subject;
+use App\Models\SchoolYear;
+use App\Models\TeacherSubjectLoad;
 
 class SubjectTeacherTableSeeder extends Seeder
 {
@@ -13,34 +15,89 @@ class SubjectTeacherTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('subject_teachers')->insert([
-            'subject_code' => 'AP',
-            'teacher_id' => 'TCHR001',
-            'school_year' => '2024-2025',
-            'grade_level' => '7',
-            'section' => 'Rose',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Ensure dependencies exist
+        $schoolYear = SchoolYear::firstOrCreate(
+            ['school_year' => '2024-2025'],
+            [
+                'start_date' => '2024-06-01',
+                'end_date' => '2025-03-31',
+                'current' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
 
-        DB::table('subject_teachers')->insert([
-            'subject_code' => 'ESP',
-            'teacher_id' => 'TCHR002',
-            'school_year' => '2024-2025',
-            'grade_level' => '7',
-            'section' => 'Rose',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Retrieve teachers (from TeacherTableSeeder)
+        $teachers = Teacher::whereIn('email', [
+            'amelia.deguzman@gmail.com',
+            'benigno.lopez@gmail.com',
+            'cecilia.garcia@gmail.com',
+        ])->get()->keyBy('email');
 
-        DB::table('subject_teachers')->insert([
-            'subject_code' => 'ENGL',
-            'teacher_id' => 'TCHR003',
-            'school_year' => '2024-2025',
-            'grade_level' => '7',
-            'section' => 'Rose',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        if ($teachers->isEmpty()) {
+            throw new \Exception('No teachers found. Please seed the TeacherTableSeeder first.');
+        }
+
+        // Retrieve subjects (from SubjectTableSeeder)
+        $subjects = Subject::whereIn('subject_code', [
+            'AP',
+            'ESP',
+            'ENGL',
+        ])->get()->keyBy('subject_code');
+
+        if ($subjects->isEmpty()) {
+            throw new \Exception('No subjects found. Please seed the SubjectTableSeeder first.');
+        }
+
+        $subjectLoads = [
+            [
+                'teacher_email' => 'amelia.deguzman@gmail.com',
+                'subject_code' => 'AP',
+                'school_year_id' => $schoolYear->id,
+                'grade_level' => '7',
+                'section' => 'Rose',
+                'semester' => null,
+            ],
+            [
+                'teacher_email' => 'benigno.lopez@gmail.com',
+                'subject_code' => 'ESP',
+                'school_year_id' => $schoolYear->id,
+                'grade_level' => '7',
+                'section' => 'Rose',
+                'semester' => null,
+            ],
+            [
+                'teacher_email' => 'cecilia.garcia@gmail.com',
+                'subject_code' => 'ENGL',
+                'school_year_id' => $schoolYear->id,
+                'grade_level' => '7',
+                'section' => 'Rose',
+                'semester' => null,
+            ],
+        ];
+
+        foreach ($subjectLoads as $loadData) {
+            $teacher = $teachers->get($loadData['teacher_email']);
+            $subject = $subjects->get($loadData['subject_code']);
+
+            if (!$teacher || !$subject) {
+                continue; // Skip if teacher or subject not found
+            }
+
+            TeacherSubjectLoad::updateOrCreate(
+                [
+                    'teacher_id' => $teacher->id,
+                    'subject_id' => $subject->id,
+                    'school_year_id' => $loadData['school_year_id'],
+                    'grade_level' => $loadData['grade_level'],
+                    'section' => $loadData['section'],
+                ],
+                [
+                    'semester' => $loadData['semester'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]
+            );
+        }
     }
 }
