@@ -42,7 +42,7 @@ class TeacherTableSeeder extends Seeder
                     'email' => 'amelia.deguzman@gmail.com',
                     'contact' => '(+63) 912-345-6789',
                 ],
-                'avatar' => 'https://via.placeholder.com/150', // Placeholder image URL
+                'avatar' => 'https://placehold.co/150x150?text=Avatar',
             ],
             [
                 'username' => 'TCHR002',
@@ -64,7 +64,7 @@ class TeacherTableSeeder extends Seeder
                     'email' => 'benigno.lopez@gmail.com',
                     'contact' => '(+63) 917-654-3210',
                 ],
-                'avatar' => 'https://via.placeholder.com/150',
+                'avatar' => 'https://placehold.co/150x150?text=Avatar',
             ],
             [
                 'username' => 'TCHR003',
@@ -86,7 +86,7 @@ class TeacherTableSeeder extends Seeder
                     'email' => 'cecilia.garcia@gmail.com',
                     'contact' => '(+63) 928-111-2222',
                 ],
-                'avatar' => 'https://via.placeholder.com/150',
+                'avatar' => 'https://placehold.co/150x150?text=Avatar',
             ],
         ];
 

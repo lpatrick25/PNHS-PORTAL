@@ -56,7 +56,6 @@ class SubjectTeacherTableSeeder extends Seeder
                 'school_year_id' => $schoolYear->id,
                 'grade_level' => '7',
                 'section' => 'Rose',
-                'semester' => null,
             ],
             [
                 'teacher_email' => 'benigno.lopez@gmail.com',
@@ -64,7 +63,6 @@ class SubjectTeacherTableSeeder extends Seeder
                 'school_year_id' => $schoolYear->id,
                 'grade_level' => '7',
                 'section' => 'Rose',
-                'semester' => null,
             ],
             [
                 'teacher_email' => 'cecilia.garcia@gmail.com',
@@ -72,7 +70,6 @@ class SubjectTeacherTableSeeder extends Seeder
                 'school_year_id' => $schoolYear->id,
                 'grade_level' => '7',
                 'section' => 'Rose',
-                'semester' => null,
             ],
         ];
 
@@ -93,7 +90,6 @@ class SubjectTeacherTableSeeder extends Seeder
                     'section' => $loadData['section'],
                 ],
                 [
-                    'semester' => $loadData['semester'],
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]
