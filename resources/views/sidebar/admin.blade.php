@@ -63,6 +63,12 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="{{ route('admin.settings') }}" class="nav-link @yield('active-settings')">
+                        <i class="nav-icon ion ion-person"></i>
+                        <p>Settings</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('logout') }}" class="nav-link">
                         <i class="nav-icon ion ion-log-out"></i>
                         <p>Logout</p>

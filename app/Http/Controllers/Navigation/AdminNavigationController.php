@@ -107,7 +107,7 @@ class AdminNavigationController extends Controller
         return view('admin.advisers');
     }
 
-    public function addAdviserStudent(Adviser $adviser)
+    public function addAdviserStudent($teacher_id)
     {
         // Get all school years for the form
         $schoolYears = SchoolYear::all();
@@ -116,7 +116,7 @@ class AdminNavigationController extends Controller
         $currentSchoolYear = SchoolYear::where('current', true)->first();
 
         // Get all advisers with their teacher details
-        $adviser = Adviser::with('teacher')->first();
+        $adviser = Adviser::with('teacher')->where('teacher_id', $teacher_id)->first();
 
         return view('admin.add_adviser_student', compact('adviser', 'schoolYears', 'currentSchoolYear'));
     }
@@ -171,5 +171,11 @@ class AdminNavigationController extends Controller
             return response()->json([], 400);
         }
         return response()->json($this->teacherSubjectLoadService->getSectionsByGradeLevel($gradeLevel));
+    }
+
+    public function viewSettings()
+    {
+        // Logic to retrieve subjects
+        return view('admin.settings');
     }
 }

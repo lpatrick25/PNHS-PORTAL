@@ -90,11 +90,12 @@ class ClassRecordService
 
             $subjectLoad = TeacherSubjectLoad::findOrFail($subjectLoadId);
             $schoolYear = SchoolYear::where('current', true)->firstOrFail();
+            $current = $subjectLoad->school_year_id === $schoolYear->id;
 
             $students = Student::whereHas('currentStatus.adviser', function ($query) use ($subjectLoad, $schoolYear) {
                 $query->where('grade_level', $subjectLoad->grade_level)
-                    ->where('section', $subjectLoad->section)
-                    ->where('school_year_id', $schoolYear->id);
+                    ->where('section', $subjectLoad->section);
+                    // ->where('school_year_id', $schoolYear->id);
             })->with(['classRecords' => function ($query) use ($subjectLoadId, $quarter) {
                 $query->where('teacher_subject_load_id', $subjectLoadId)
                     ->where('quarter', $quarter);
@@ -169,8 +170,8 @@ class ClassRecordService
                 ];
             })->values()->toArray();
 
-            Log::info('Successfully fetched class records by subject load', ['count' => count($formattedStudents)]);
-            return ['students' => $formattedStudents, 'scores' => $score];
+            Log::info('Successfully fetched class records by subject load', ['count' => count($formattedStudents), 'current' => $current]);
+            return ['students' => $formattedStudents, 'scores' => $score, 'current' => $current];
         } catch (Exception $e) {
             Log::error('Failed to fetch class records by subject load', [
                 'subject_load_id' => $subjectLoadId,

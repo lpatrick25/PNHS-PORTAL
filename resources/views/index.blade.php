@@ -181,9 +181,28 @@
                         }
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
-                        $('#error-msg').html(
-                            '<p class="alert alert-danger">Something went wrong. Please try again later.</p>'
-                        );
+                        if (jqXHR.responseJSON && jqXHR.responseJSON
+                            .errors) {
+                            let errors = jqXHR.responseJSON.errors;
+                            let errorMsg = `${jqXHR.responseJSON.msg}\n`;
+                            for (const [field, messages] of Object.entries(
+                                    errors)) {
+                                errorMsg += `- ${messages.join(', ')}\n`;
+                            }
+                            $('#error-msg').html(
+                                '<p class="alert alert-danger">' + errorMsg + '</p>'
+                            );
+                        } else if (jqXHR.responseJSON && jqXHR.responseJSON
+                            .msg) {
+                            $('#error-msg').html(
+                                '<p class="alert alert-danger">' + jqXHR.responseJSON.msg +
+                                '</p>'
+                            );
+                        } else {
+                            $('#error-msg').html(
+                                '<p class="alert alert-danger">An unexpected error occurred. Please try again.</p>'
+                            );
+                        }
                     }
                 });
                 $('#quickForm').find('button[type=submit]').removeAttr('disabled');

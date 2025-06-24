@@ -18,12 +18,11 @@ class LoginController extends Controller
 
         $credentials = $request->only('username', 'password');
 
-        // Check if username and password are the same (default password)
-        if ($credentials['username'] === $credentials['password']) {
-            // Attempt login
-            if (Auth::attempt($credentials)) {
-                $user = Auth::user();
-                // Store user ID in session for password change
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+
+            // Handle default password
+            if ($credentials['username'] === $credentials['password']) {
                 session(['user_id' => $user->id]);
                 return response()->json([
                     'valid' => true,
@@ -31,15 +30,12 @@ class LoginController extends Controller
                     'return_url' => route('password.change')
                 ]);
             }
-        }
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
             $returnUrl = $this->getReturnUrlByRole($user->role);
             return response()->json(['valid' => true, 'msg' => 'Login successful', 'return_url' => $returnUrl]);
         }
 
-        return response()->json(['valid' => false, 'msg' => 'Invalid credentials'], 401);
+        return response()->json(['valid' => false, 'msg' => 'Invalid credentials'], 200);
     }
 
     protected function getReturnUrlByRole($role)

@@ -57,6 +57,10 @@
 @endsection
 @section('scripts')
     <script type="text/javascript">
+        function editLoad(subject_load_id) {
+            window.location.href = '{{ route('viewClassRecord', '') }}/' + subject_load_id;
+        }
+
         function view(subject_load_id) {
             window.location.href = '{{ route('viewClassRecord', '') }}/' + subject_load_id;
         }

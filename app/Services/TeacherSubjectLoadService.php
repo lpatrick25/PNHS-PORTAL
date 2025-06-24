@@ -23,7 +23,7 @@ class TeacherSubjectLoadService
             $formattedLoads = $loads->map(function ($load, $key) {
                 $actions = '';
                 $actions .= '<button type="button" class="btn btn-md btn-primary" title="Update" onclick="editLoad(' . $load->id . ')"><i class="fa fa-edit"></i></button>';
-                $actions .= '<button type="button" class="btn btn-md btn-danger ml-1" title="Delete" onclick="deleteLoad(' . $load->id . ')"><i class="fa fa-trash"></i></button>';
+                // $actions .= '<button type="button" class="btn btn-md btn-danger ml-1" title="Delete" onclick="deleteLoad(' . $load->id . ')"><i class="fa fa-trash"></i></button>';
 
                 return [
                     'count' => $key + 1,

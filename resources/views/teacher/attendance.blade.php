@@ -259,7 +259,7 @@
 
             $('#school_year').on('change', function() {
                 $('#table').bootstrapTable('refresh', {
-                    url: '{{ route('teacherSubjectLoads.index') }}?teacher_id={{ $teacherId }}&school_year_id=' +
+                    url: '{{ route('teacher.subjects-teacher-load') }}?school_year_id=' +
                         $(this).val()
                 });
             });

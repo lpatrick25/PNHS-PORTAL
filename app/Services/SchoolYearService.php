@@ -16,6 +16,10 @@ class SchoolYearService
             $schoolYears = SchoolYear::all();
 
             $formattedSchoolYears = $schoolYears->map(function ($schoolYear, $key) {
+                $actions = '';
+                $actions .= '<button type="button" class="btn btn-md btn-primary" title="Update" onclick="view(' . $schoolYear->id . ')"><i class="fa fa-edit"></i></button>';
+                $actions .= '<button type="button" class="btn btn-md btn-success ml-1" title="Set Current School Year" onclick="setCurrent(' . $schoolYear->id . ')"><i class="fa fa-check"></i></button>';
+
                 return [
                     'count' => $key + 1,
                     'id' => $schoolYear->id,
@@ -23,6 +27,7 @@ class SchoolYearService
                     'start_date' => $schoolYear->start_date->format('Y-m-d'),
                     'end_date' => $schoolYear->end_date->format('Y-m-d'),
                     'current' => $schoolYear->current ? 'Yes' : 'No',
+                    'action' => $actions,
                 ];
             })->toArray();
 
@@ -132,6 +137,40 @@ class SchoolYearService
             return [
                 'valid' => false,
                 'msg' => 'Failed to delete school year: ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    public function setCurrent($schoolYearId)
+    {
+        try {
+            Log::info('Setting current school year', ['school_year_id' => $schoolYearId]);
+
+            $schoolYear = DB::transaction(function () use ($schoolYearId) {
+                // Reset current status for all school years
+                SchoolYear::where('current', true)->update(['current' => false]);
+                // Set the selected school year as current
+                $schoolYear = SchoolYear::findOrFail($schoolYearId);
+                $schoolYear->update(['current' => true]);
+                return $schoolYear;
+            });
+
+            Log::info('Successfully set current school year', ['school_year_id' => $schoolYearId]);
+
+            return [
+                'valid' => true,
+                'msg' => 'School year set as current successfully.',
+                'school_year' => $schoolYear,
+            ];
+        } catch (Exception $e) {
+            Log::error('Failed to set current school year', [
+                'school_year_id' => $schoolYearId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return [
+                'valid' => false,
+                'msg' => 'Failed to set current school year. Please try again later.',
             ];
         }
     }

@@ -71,6 +71,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'role:admin']], func
     Route::get('/getTeacherList', [AdminNavigationController::class, 'getTeacherList'])->name('admin.getTeacherList');
     Route::get('/viewTeacherSubjectLoad/{teacherId}', [AdminNavigationController::class, 'viewTeacherSubjectLoad'])->name('admin.viewTeacherSubjectLoad');
     Route::get('/getSectionsByGradeLevel', [AdminNavigationController::class, 'getSectionsByGradeLevel'])->name('admin.getSectionsByGradeLevel');
+
+    Route::get('/viewSettings', [AdminNavigationController::class, 'viewSettings'])->name('admin.settings');
 });
 
 Route::group(['prefix' => 'teacher', 'middleware' => ['auth', 'role:teacher']], function () {
@@ -90,7 +92,7 @@ Route::group(['prefix' => 'teacher', 'middleware' => ['auth', 'role:teacher']], 
 Route::group(['prefix' => 'student', 'middleware' => ['auth', 'role:student']], function () {
     Route::get('/dashboard', [StudentNavigationController::class, 'viewDashboard'])->name('student.dashboard');
     // Add other student routes here
-    Route::get('/subjects', [StudentController::class, 'subjects'])->name('student.subjects');
+    Route::get('/subjects', [StudentNavigationController::class, 'subjects'])->name('student.subjects');
     Route::get('/grades', [StudentNavigationController::class, 'grades'])->name('student.grades');
     Route::get('/reportCards/getStudentGrades/{gradeLevel}/{section}', [StudentNavigationController::class, 'getStudentGrades'])->name('student.getStudentGrades');
     Route::get('/profile', [StudentController::class, 'profile'])->name('student.profile');
@@ -119,6 +121,7 @@ Route::prefix('/address')->group(function () {
 Route::get('/profile', [ProfileController::class, 'viewProfile'])->name('viewProfile');
 
 Route::resource('school-years', SchoolYearController::class);
+Route::patch('/school-years/{schoolYearId}/set-current', [SchoolYearController::class, 'setCurrentSchoolYear'])->name('school-years.set-current');
 
 Route::resource('students', StudentController::class);
 Route::post('/students/updateImage/{studentLRN}', [StudentController::class, 'updateAvatar'])->name('students.updateAvatar');

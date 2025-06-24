@@ -6,27 +6,35 @@
     active
 @endsection
 @section('app-title')
-    Class Record <span class="text-success" style="font-weight: bolder;">Grade {{ $subjectLoad->grade_level }}</span> - <span class="text-danger" style="font-weight: bolder;">{{ $subjectLoad->section }}</span>
+    Class Record <span class="text-success" style="font-weight: bolder;">Grade {{ $subjectLoad->grade_level }}</span> - <span
+        class="text-danger" style="font-weight: bolder;">{{ $subjectLoad->section }}</span>
 @endsection
 @section('custom-css')
     <style type="text/css">
-        td, th, thead {
+        td,
+        th,
+        thead {
             border: 1px solid black;
         }
+
         table {
             border-collapse: collapse;
             width: 100%;
         }
-        th, td {
+
+        th,
+        td {
             text-align: center;
             padding: 8px;
         }
+
         .bootstrap-table .fixed-table-container .table th,
         .bootstrap-table .fixed-table-container .table td {
             vertical-align: middle;
             box-sizing: border-box;
             border: 1px solid black;
         }
+
         .editable-click:after {
             font-family: "Font Awesome 5 Free";
             font-weight: 900;
@@ -34,6 +42,7 @@
             margin-left: 5px;
             color: #007bff;
         }
+
         .editableform-loading:after {
             font-family: "Font Awesome 5 Free";
             font-weight: 900;
@@ -41,13 +50,21 @@
             margin-left: 5px;
             animation: spin 1s infinite linear;
         }
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
+
         .editableform {
             margin: 10px !important;
         }
+
         .bootstrap-table .fixed-table-container .table thead th {
             vertical-align: middle;
         }
@@ -61,7 +78,8 @@
             <hr class="card card-outline card-success">
             <div class="row">
                 <div class="col-lg-6 text-left">
-                    <a href="{{ route('viewClassRecordTeacher') }}" class="btn btn-danger btn-md"><i class="fa fa-arrow-left"></i> Go Back</a>
+                    <a href="{{ route('viewClassRecordTeacher') }}" class="btn btn-danger btn-md"><i
+                            class="fa fa-arrow-left"></i> Go Back</a>
                 </div>
                 <div class="col-lg-2">
                     <div class="form-group">
@@ -74,10 +92,12 @@
                     </div>
                 </div>
                 <div class="col-lg-2 text-right">
-                    <button class="btn btn-primary btn-md" id="generate-btn"><i class="fa fa-sync"></i> Generate Records</button>
+                    <button class="btn btn-primary btn-md" id="generate-btn"><i class="fa fa-sync"></i> Generate
+                        Records</button>
                 </div>
                 <div class="col-lg-2 text-right">
-                    <button class="btn btn-success btn-md" onclick="exportToExcel('{{ $subjectLoad->id }}')"><i class="fa fa-file-excel"></i> Export to Excel</button>
+                    <button class="btn btn-success btn-md" onclick="exportToExcel('{{ $subjectLoad->id }}')"><i
+                            class="fa fa-file-excel"></i> Export to Excel</button>
                 </div>
             </div>
             <hr class="card card-outline card-success">
@@ -86,33 +106,19 @@
             <div id="toolbar-1">
                 <h3>{{ $subjectLoad->subject->subject_name }}</h3>
             </div>
-            <table id="table1"
-                   data-show-refresh="true"
-                   data-auto-refresh="true"
-                   data-pagination="false"
-                   data-show-columns="false"
-                   data-cookie="false"
-                   data-cookie-id-table="records_table"
-                   data-search="false"
-                   data-click-to-select="false"
-                   data-show-copy-rows="false"
-                   data-page-number="1"
-                   data-show-toggle="false"
-                   data-show-export="false"
-                   data-filter-control="true"
-                   data-show-search-clear-button="false"
-                   data-key-events="false"
-                   data-mobile-responsive="true"
-                   data-check-on-init="true"
-                   data-show-print="false"
-                   data-sticky-header="true"
-                   data-toolbar="#toolbar-1">
+            <table id="table1" data-show-refresh="true" data-auto-refresh="true" data-pagination="false"
+                data-show-columns="false" data-cookie="false" data-cookie-id-table="records_table" data-search="false"
+                data-click-to-select="false" data-show-copy-rows="false" data-page-number="1" data-show-toggle="false"
+                data-show-export="false" data-filter-control="true" data-show-search-clear-button="false"
+                data-key-events="false" data-mobile-responsive="true" data-check-on-init="true" data-show-print="false"
+                data-sticky-header="true" data-toolbar="#toolbar-1">
                 <thead></thead>
                 <tbody></tbody>
             </table>
         </div>
     </div>
-    <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal fade" id="exportModal" tabindex="-1" role="dialog" aria-labelledby="exportModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -187,23 +193,151 @@
             });
         }
 
+        // function defaultTableHeader() {
+        //     return `
+    //     <tr>
+    //         <th class="text-center" style="min-width: 200px;">LEARNERS' NAME</th>
+    //         <th colspan="10" class="text-center">WRITTEN WORKS (30%)</th>
+    //         <th colspan="10" class="text-center">PERFORMANCE TASKS (50%)</th>
+    //         <th class="text-center" style="min-width: 50px;">QUARTERLY ASSESSMENT (20%)</th>
+    //     </tr>
+    //     <tr>
+    //         <th></th>
+    //         ${Array.from({length: 10}, (_, i) => `<th>${i+1}</th>`).join('')}
+    //         ${Array.from({length: 10}, (_, i) => `<th>${i+1}</th>`).join('')}
+    //         <th>1</th>
+    //     </tr>
+    // `;
+        // }
         function defaultTableHeader() {
+            const generateColumns = (count, start = 1) =>
+                Array.from({
+                    length: count
+                }, (_, i) => `<th>${i + start}</th>`).join('');
+
             return `
-                <tr>
-                    <th class="text-center" style="min-width: 200px;">LEARNERS' NAME</th>
-                    <th colspan="10" class="text-center">WRITTEN WORKS (30%)</th>
-                    <th colspan="10" class="text-center">PERFORMANCE TASKS (50%)</th>
-                    <th class="text-center" style="min-width: 50px;">QUARTERLY ASSESSMENT (20%)</th>
-                </tr>
-                <tr>
-                    <th></th>
-                    ${Array.from({length: 10}, (_, i) => `<th>${i+1}</th>`).join('')}
-                    ${Array.from({length: 10}, (_, i) => `<th>${i+1}</th>`).join('')}
-                    <th>1</th>
-                </tr>
-            `;
+        <tr>
+            <th class="text-center" style="min-width: 200px;">LEARNERS' NAME</th>
+            <th colspan="10" class="text-center">WRITTEN WORKS (30%)</th>
+            <th colspan="10" class="text-center">PERFORMANCE TASKS (50%)</th>
+            <th class="text-center" style="min-width: 50px;">QUARTERLY ASSESSMENT (20%)</th>
+        </tr>
+        <tr>
+            <th></th>
+            ${generateColumns(10)}
+            ${generateColumns(10)}
+            <th>1</th>
+        </tr>
+    `;
         }
 
+        // function refresh_tables() {
+        //     $.ajax({
+        //         url: '{{ route('classRecords.bySubjectLoad') }}',
+        //         method: 'GET',
+        //         data: {
+        //             subject_load_id: $('#subjectLoadId').val(),
+        //             quarter: $('#select_quarter').val(),
+        //         },
+        //         success: function(response) {
+        //             const students = response.students || [];
+        //             const scores = response.scores || {};
+        //             const current = response.current || false;
+
+        //             const thead = $("#table1 thead");
+        //             thead.empty();
+        //             thead.append(defaultTableHeader());
+
+        //             if (students.length > 0) {
+        //                 let headerRow = `<tr>`;
+        //                 headerRow +=
+        //                     `<th class="text-center" style="min-width: 200px;">Highest Possible Score</th>`;
+        //                 scores.writtenWorks.forEach((score, index) => {
+        //                     headerRow += `
+    //                         <th class="editable"
+    //                             data-name="total_written_work_${index + 1}"
+    //                             data-pk="Written Works ${index + 1},${score.quarter},${$('#subjectLoadId').val()}"
+    //                             data-update-type="totalScore">
+    //                             ${score.score ?? ''}
+    //                         </th>`;
+        //                 });
+        //                 scores.performanceTasks.forEach((score, index) => {
+        //                     headerRow += `
+    //                         <th class="editable"
+    //                             data-name="total_performance_task_${index + 1}"
+    //                             data-pk="Performance Tasks ${index + 1},${score.quarter},${$('#subjectLoadId').val()}"
+    //                             data-update-type="totalScore">
+    //                             ${score.score ?? ''}
+    //                         </th>`;
+        //                 });
+        //                 headerRow += `
+    //                     <th class="editable"
+    //                         data-name="total_quarterly_assessment"
+    //                         data-pk="Quarterly Assessment,${scores.quarterlyAssessment.quarter},${$('#subjectLoadId').val()}"
+    //                         data-update-type="totalScore">
+    //                         ${scores.quarterlyAssessment.score ?? ''}
+    //                     </th>`;
+        //                 headerRow += `</tr>`;
+        //                 thead.append(headerRow);
+        //             }
+
+        //             const tbody = $("#table1 tbody");
+        //             tbody.empty();
+        //             students.forEach(student => {
+        //                 let row = `<tr>`;
+        //                 row += `<td class="text-left" style="min-width: 200px;">${student.name}</td>`;
+        //                 student.writtenWorks.forEach((score, index) => {
+        //                     row += `
+    //                         <td class="editable"
+    //                             data-name="written_work_${index + 1}"
+    //                             data-pk="${student.writtenWorksRecordsID[index]}"
+    //                             data-update-type="score">
+    //                             ${score !== 0 ? score : ''}
+    //                         </td>`;
+        //                 });
+        //                 student.performanceTasks.forEach((score, index) => {
+        //                     row += `
+    //                         <td class="editable"
+    //                             data-name="performance_task_${index + 1}"
+    //                             data-pk="${student.performanceTasksRecordsID[index]}"
+    //                             data-update-type="score">
+    //                             ${score !== 0 ? score : ''}
+    //                         </td>`;
+        //                 });
+        //                 row += `
+    //                     <td class="editable"
+    //                         data-name="quarterly_assessment"
+    //                         data-pk="${student.quarterlyAssessmentRecordsID}"
+    //                         data-update-type="score">
+    //                         ${student.quarterlyAssessment !== 0 ? student.quarterlyAssessment : ''}
+    //                     </td>`;
+        //                 row += `</tr>`;
+        //                 tbody.append(row);
+        //             });
+
+        //             $('#table1').bootstrapTable({
+        //                 stickyHeader: true,
+        //                 filterControl: true,
+        //                 search: true,
+        //                 pagination: false,
+        //                 autoRefresh: true,
+        //                 toolbarAlign: 'right',
+        //                 buttonsAlign: 'left',
+        //                 searchAlign: 'left',
+        //                 classes: 'table table-bordered table-hover x-editor-custom',
+        //             });
+
+        //             initializeEditable();
+        //         },
+        //         error: function(jqXHR) {
+        //             Swal.fire({
+        //                 icon: 'error',
+        //                 title: 'Error',
+        //                 text: jqXHR.responseJSON?.msg || 'Failed to fetch class records'
+        //             });
+        //         }
+        //     });
+        // }
         function refresh_tables() {
             $.ajax({
                 url: '{{ route('classRecords.bySubjectLoad') }}',
@@ -215,6 +349,7 @@
                 success: function(response) {
                     const students = response.students || [];
                     const scores = response.scores || {};
+                    const current = response.current || false;
 
                     const thead = $("#table1 thead");
                     thead.empty();
@@ -222,32 +357,33 @@
 
                     if (students.length > 0) {
                         let headerRow = `<tr>`;
-                        headerRow += `<th class="text-center" style="min-width: 200px;">Highest Possible Score</th>`;
+                        headerRow +=
+                            `<th class="text-center" style="min-width: 200px;">Highest Possible Score</th>`;
                         scores.writtenWorks.forEach((score, index) => {
                             headerRow += `
-                                <th class="editable"
-                                    data-name="total_written_work_${index + 1}"
-                                    data-pk="Written Works ${index + 1},${score.quarter},${$('#subjectLoadId').val()}"
-                                    data-update-type="totalScore">
-                                    ${score.score ?? ''}
-                                </th>`;
+                        <th class="${current ? 'editable' : ''}"
+                            ${current ? `data-name="total_written_work_${index + 1}"` : ''}
+                            ${current ? `data-pk="Written Works ${index + 1},${score.quarter},${$('#subjectLoadId').val()}"` : ''}
+                            ${current ? `data-update-type="totalScore"` : ''}>
+                            ${score.score ?? ''}
+                        </th>`;
                         });
                         scores.performanceTasks.forEach((score, index) => {
                             headerRow += `
-                                <th class="editable"
-                                    data-name="total_performance_task_${index + 1}"
-                                    data-pk="Performance Tasks ${index + 1},${score.quarter},${$('#subjectLoadId').val()}"
-                                    data-update-type="totalScore">
-                                    ${score.score ?? ''}
-                                </th>`;
+                        <th class="${current ? 'editable' : ''}"
+                            ${current ? `data-name="total_performance_task_${index + 1}"` : ''}
+                            ${current ? `data-pk="Performance Tasks ${index + 1},${score.quarter},${$('#subjectLoadId').val()}"` : ''}
+                            ${current ? `data-update-type="totalScore"` : ''}>
+                            ${score.score ?? ''}
+                        </th>`;
                         });
                         headerRow += `
-                            <th class="editable"
-                                data-name="total_quarterly_assessment"
-                                data-pk="Quarterly Assessment,${scores.quarterlyAssessment.quarter},${$('#subjectLoadId').val()}"
-                                data-update-type="totalScore">
-                                ${scores.quarterlyAssessment.score ?? ''}
-                            </th>`;
+                    <th class="${current ? 'editable' : ''}"
+                        ${current ? `data-name="total_quarterly_assessment"` : ''}
+                        ${current ? `data-pk="Quarterly Assessment,${scores.quarterlyAssessment.quarter},${$('#subjectLoadId').val()}"` : ''}
+                        ${current ? `data-update-type="totalScore"` : ''}>
+                        ${scores.quarterlyAssessment.score ?? ''}
+                    </th>`;
                         headerRow += `</tr>`;
                         thead.append(headerRow);
                     }
@@ -259,29 +395,29 @@
                         row += `<td class="text-left" style="min-width: 200px;">${student.name}</td>`;
                         student.writtenWorks.forEach((score, index) => {
                             row += `
-                                <td class="editable"
-                                    data-name="written_work_${index + 1}"
-                                    data-pk="${student.writtenWorksRecordsID[index]}"
-                                    data-update-type="score">
-                                    ${score !== 0 ? score : ''}
-                                </td>`;
+                        <td class="${current ? 'editable' : ''}"
+                            ${current ? `data-name="written_work_${index + 1}"` : ''}
+                            ${current ? `data-pk="${student.writtenWorksRecordsID[index]}"` : ''}
+                            ${current ? `data-update-type="score"` : ''}>
+                            ${score !== 0 ? score : ''}
+                        </td>`;
                         });
                         student.performanceTasks.forEach((score, index) => {
                             row += `
-                                <td class="editable"
-                                    data-name="performance_task_${index + 1}"
-                                    data-pk="${student.performanceTasksRecordsID[index]}"
-                                    data-update-type="score">
-                                    ${score !== 0 ? score : ''}
-                                </td>`;
+                        <td class="${current ? 'editable' : ''}"
+                            ${current ? `data-name="performance_task_${index + 1}"` : ''}
+                            ${current ? `data-pk="${student.performanceTasksRecordsID[index]}"` : ''}
+                            ${current ? `data-update-type="score"` : ''}>
+                            ${score !== 0 ? score : ''}
+                        </td>`;
                         });
                         row += `
-                            <td class="editable"
-                                data-name="quarterly_assessment"
-                                data-pk="${student.quarterlyAssessmentRecordsID}"
-                                data-update-type="score">
-                                ${student.quarterlyAssessment !== 0 ? student.quarterlyAssessment : ''}
-                            </td>`;
+                    <td class="${current ? 'editable' : ''}"
+                        ${current ? `data-name="quarterly_assessment"` : ''}
+                        ${current ? `data-pk="${student.quarterlyAssessmentRecordsID}"` : ''}
+                        ${current ? `data-update-type="score"` : ''}>
+                        ${student.quarterlyAssessment !== 0 ? student.quarterlyAssessment : ''}
+                    </td>`;
                         row += `</tr>`;
                         tbody.append(row);
                     });
@@ -298,7 +434,10 @@
                         classes: 'table table-bordered table-hover x-editor-custom',
                     });
 
-                    initializeEditable();
+                    // Only initialize editable fields if the quarter is current
+                    if (current) {
+                        initializeEditable();
+                    }
                 },
                 error: function(jqXHR) {
                     Swal.fire({
@@ -319,23 +458,21 @@
                     const updateType = $(this).data('update-type');
                     const value = params.value;
 
-                    const url = updateType === 'totalScore'
-                        ? '{{ route('classRecords.updateTotalScore') }}'
-                        : '{{ route('classRecords.updateScore') }}';
+                    const url = updateType === 'totalScore' ?
+                        '{{ route('classRecords.updateTotalScore') }}' :
+                        '{{ route('classRecords.updateScore') }}';
 
-                    const data = updateType === 'totalScore'
-                        ? {
-                            records_name: pk.split(',')[0],
-                            quarter: pk.split(',')[1],
-                            subject_load_id: pk.split(',')[2],
-                            value: value,
-                            _token: $('meta[name="csrf-token"]').attr('content')
-                        }
-                        : {
-                            pk: pk,
-                            value: value,
-                            _token: $('meta[name="csrf-token"]').attr('content')
-                        };
+                    const data = updateType === 'totalScore' ? {
+                        records_name: pk.split(',')[0],
+                        quarter: pk.split(',')[1],
+                        subject_load_id: pk.split(',')[2],
+                        value: value,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    } : {
+                        pk: pk,
+                        value: value,
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    };
 
                     return $.ajax({
                         url: url,
@@ -343,7 +480,8 @@
                         data: data,
                         success: function(response) {
                             if (response.valid) {
-                                $('#show-msg').html(`<div class="alert alert-success">${response.msg}</div>`);
+                                $('#show-msg').html(
+                                    `<div class="alert alert-success">${response.msg}</div>`);
                                 $('#table1').bootstrapTable('refresh');
                                 setTimeout(() => $('#show-msg').html(''), 5000);
                             } else {
@@ -395,14 +533,18 @@
                             },
                             dataType: 'JSON',
                             success: function(response) {
-                                $('#show-msg').html(`<div class="alert alert-${response.valid ? 'success' : 'danger'}">${response.msg}</div>`);
+                                $('#show-msg').html(
+                                    `<div class="alert alert-${response.valid ? 'success' : 'danger'}">${response.msg}</div>`
+                                );
                                 if (response.valid) {
                                     refresh_tables();
                                 }
                                 setTimeout(() => $('#show-msg').html(''), 5000);
                             },
                             error: function(jqXHR) {
-                                $('#show-msg').html(`<div class="alert alert-danger">${jqXHR.responseJSON?.msg || 'Failed to generate records'}</div>`);
+                                $('#show-msg').html(
+                                    `<div class="alert alert-danger">${jqXHR.responseJSON?.msg || 'Failed to generate records'}</div>`
+                                );
                                 setTimeout(() => $('#show-msg').html(''), 5000);
                             }
                         });

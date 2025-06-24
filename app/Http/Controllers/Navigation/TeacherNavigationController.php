@@ -59,10 +59,10 @@ class TeacherNavigationController extends Controller
         return view('teacher.advisory', compact('schoolYears'));
     }
 
-    public function viewAdvisoryStudents()
+    public function viewAdvisoryStudents(Request $request)
     {
         $teacher = auth()->user()->teacher;
-        $currentSchoolYear = SchoolYear::where('current', true)->first();
+        $currentSchoolYear = SchoolYear::findOrFail($request->query('school_year_id'));
 
         if (!$teacher || !$currentSchoolYear) {
             return response()->json(['message' => 'Teacher or current school year not found'], 404);
