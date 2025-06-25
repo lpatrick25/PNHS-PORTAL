@@ -10,7 +10,7 @@
 @endsection
 @section('content')
     <form id="addForm" class="row" role="form" enctype="multipart/form-data">
-        <div id="show-msg"></div>
+        <div id="show-msg" class="col-lg-12"></div>
         <div class="col-lg-12">
             <p class="text-left text-danger"><strong>TEACHER PROFILE</strong></p>
         </div>
@@ -308,9 +308,38 @@
                                         }
                                     },
                                     error: function(jqXHR) {
-                                        $('#show-msg').html(
-                                            '<div class="alert alert-danger">Something went wrong! Please try again later.</div>'
-                                            );
+                                        let errorMessage =
+                                            '<div class="alert alert-danger">';
+
+                                        try {
+                                            const response = JSON.parse(jqXHR
+                                                .responseText);
+
+                                            // Display main message if available
+                                            if (response.message) {
+                                                errorMessage +=
+                                                    `<p>${response.message}</p>`;
+                                            }
+
+                                            if (response.errors) {
+                                                errorMessage += '<ul>';
+                                                for (const field in response.errors) {
+                                                    response.errors[field].forEach(
+                                                        error => {
+                                                            errorMessage +=
+                                                                `<li>${error}</li>`;
+                                                        });
+                                                }
+                                                errorMessage += '</ul>';
+                                            }
+
+                                        } catch (e) {
+                                            errorMessage +=
+                                                'Something went wrong! Please try again later.';
+                                        }
+
+                                        errorMessage += '</div>';
+                                        $('#show-msg').html(errorMessage);
                                     }
                                 });
                             }

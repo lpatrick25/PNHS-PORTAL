@@ -85,8 +85,6 @@
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-custon-rounded-three btn-primary btn-md"><i
                             class="fa fa-paper-plane"></i> Submit</button>
-                    <button type="button" data-dismiss="modal" class="btn btn-custon-rounded-three btn-danger btn-md"
-                        href="#"><i class="fa fa-times"></i> Cancel</button>
                 </div>
             </form>
         </div>
@@ -229,25 +227,40 @@
                                 });
                             }
                         },
-                        error: function(jqXHR, textStatus, errorThrown) {
+                        error: function(jqXHR) {
                             $('#updatePassword').modal('show');
-                            if (jqXHR.responseJSON && jqXHR.responseJSON
-                                .error) {
-                                var errors = jqXHR.responseJSON.error;
-                                var errorMsg = "Error submitting data: " +
-                                    errors + ". ";
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Oops...',
-                                    text: errorMsg
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Oops...',
-                                    text: 'Something went wrong! Please try again later.'
-                                });
+                            let errorMessage =
+                                '<div class="alert alert-danger">';
+
+                            try {
+                                const response = JSON.parse(jqXHR
+                                    .responseText);
+
+                                // Display main message if available
+                                if (response.message) {
+                                    errorMessage +=
+                                        `<p>${response.message}</p>`;
+                                }
+
+                                if (response.errors) {
+                                    errorMessage += '<ul>';
+                                    for (const field in response.errors) {
+                                        response.errors[field].forEach(
+                                            error => {
+                                                errorMessage +=
+                                                    `<li>${error}</li>`;
+                                            });
+                                    }
+                                    errorMessage += '</ul>';
+                                }
+
+                            } catch (e) {
+                                errorMessage +=
+                                    'Something went wrong! Please try again later.';
                             }
+
+                            errorMessage += '</div>';
+                            $('#show-msg').html(errorMessage);
                         }
                     });
                 }

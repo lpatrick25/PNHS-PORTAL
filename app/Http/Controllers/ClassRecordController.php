@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreClassRecordRequest;
 use App\Http\Requests\UpdateClassRecordRequest;
+use App\Models\ClassRecord;
 use App\Services\ClassRecordService;
 use App\Models\SchoolYear;
 use Illuminate\Http\Request;
@@ -210,5 +211,130 @@ class ClassRecordController extends Controller
         }
 
         return response()->download($filePath, $fileName);
+    }
+
+    public function checkPreviousScore(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'records_name' => 'required|string', // e.g., "Written Works 2"
+                'record_id' => 'nullable|integer|exists:class_records,id', // Required for score
+                'quarter' => 'required|string|in:1st Quarter,2nd Quarter,3rd Quarter,4th Quarter',
+                'subject_load_id' => 'required|integer|exists:teacher_subject_loads,id',
+                'update_type' => 'required|in:score,totalScore',
+            ]);
+
+            $recordsName = $validated['records_name'];
+            $recordId = $validated['record_id'];
+            $quarter = $validated['quarter'];
+            $subjectLoadId = $validated['subject_load_id'];
+            $updateType = $validated['update_type'];
+
+            Log::info('Checking previous score', [
+                'records_name' => $recordsName,
+                'record_id' => $recordId,
+                'quarter' => $quarter,
+                'subject_load_id' => $subjectLoadId,
+                'update_type' => $updateType,
+            ]);
+
+            // Determine the previous assessment
+            if (preg_match('/^(Written Works|Performance Tasks) (\d+)$/', $recordsName, $matches)) {
+                $type = $matches[1]; // "Written Works" or "Performance Tasks"
+                $number = (int)$matches[2]; // e.g., 2
+                if ($number <= 1) {
+                    return response()->json(['valid' => true]);
+                }
+
+                $previousNumber = $number - 1;
+                $previousRecordsName = "$type $previousNumber";
+
+                if ($updateType === 'score') {
+                    if (!$recordId) {
+                        Log::error('Missing record_id for student score validation', $validated);
+                        return response()->json([
+                            'valid' => false,
+                            'msg' => 'Record ID is required for student score validation.',
+                        ], 422);
+                    }
+
+                    $currentRecord = ClassRecord::findOrFail($recordId);
+                    $studentId = $currentRecord->student_id;
+
+                    // Check if the previous assessment has a student score
+                    $previousRecord = ClassRecord::where([
+                        'records_name' => $previousRecordsName,
+                        'student_id' => $studentId,
+                        'quarter' => $quarter,
+                        'teacher_subject_load_id' => $subjectLoadId,
+                    ])->first();
+
+                    if (!$previousRecord) {
+                        Log::warning('Previous record not found', [
+                            'previous_records_name' => $previousRecordsName,
+                            'student_id' => $studentId,
+                            'quarter' => $quarter,
+                            'subject_load_id' => $subjectLoadId,
+                        ]);
+                        return response()->json([
+                            'valid' => false,
+                            'msg' => "Cannot enter score for $recordsName. $previousRecordsName record is missing.",
+                        ], 422);
+                    }
+
+                    if ($previousRecord->student_score <= 0) {
+                        Log::warning('Previous record has no score', [
+                            'previous_records_name' => $previousRecordsName,
+                            'student_id' => $studentId,
+                            'student_score' => $previousRecord->student_score,
+                        ]);
+                        return response()->json([
+                            'valid' => false,
+                            'msg' => "Cannot enter score for $recordsName. $previousRecordsName must have a score first.",
+                        ], 422);
+                    }
+                } else {
+                    // Validate total score
+                    $previousRecord = ClassRecord::where([
+                        'records_name' => $previousRecordsName,
+                        'quarter' => $quarter,
+                        'teacher_subject_load_id' => $subjectLoadId,
+                    ])
+                        ->whereNotNull('total_score')
+                        ->where('total_score', '>', 0)
+                        ->first();
+
+                    if (!$previousRecord) {
+                        Log::warning('Previous total score record not found or empty', [
+                            'previous_records_name' => $previousRecordsName,
+                            'quarter' => $quarter,
+                            'subject_load_id' => $subjectLoadId,
+                        ]);
+                        return response()->json([
+                            'valid' => false,
+                            'msg' => "Cannot enter total score for $recordsName. $previousRecordsName must have a total score first.",
+                        ], 422);
+                    }
+                }
+
+                return response()->json(['valid' => true]);
+            }
+
+            Log::error('Invalid records_name format', ['records_name' => $recordsName]);
+            return response()->json([
+                'valid' => false,
+                'msg' => 'Invalid records_name format.',
+            ], 422);
+        } catch (Exception $e) {
+            Log::error('Failed to check previous score', [
+                'input' => $request->all(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json([
+                'valid' => false,
+                'msg' => 'Failed to check previous score: ' . $e->getMessage(),
+            ], 422);
+        }
     }
 }

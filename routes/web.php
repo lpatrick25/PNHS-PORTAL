@@ -166,6 +166,7 @@ Route::get('/class-records/subject/{subjectLoadId}', [ClassRecordController::cla
 Route::get('/class-records/by-subject-load', [ClassRecordController::class, 'bySubjectLoad'])->name('classRecords.bySubjectLoad');
 Route::get('/class-records/export/{subjectLoadId}', [ClassRecordController::class, 'export'])->name('classRecords.export');
 Route::get('/class-records/download/{subjectLoadId}/{fileName}', [ClassRecordController::class, 'downloadExcel'])->name('classRecords.download');
+Route::post('/class-records/checkPreviousScore/', [ClassRecordController::class, 'checkPreviousScore'])->name('classRecords.checkPreviousScore');
 
 // Report Card Routes
 Route::post('/reportCards/{studentId}/{schoolYearId}', [ReportCardController::class, 'generateReportCard'])->name('reportCards.generateReportCard');

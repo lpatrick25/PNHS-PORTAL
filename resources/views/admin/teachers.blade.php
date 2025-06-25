@@ -176,9 +176,38 @@
                                     }
                                 },
                                 error: function(jqXHR) {
-                                    $('#adviserFormMsg').html(
-                                        '<div class="alert alert-danger">Something went wrong! Please try again later.</div>'
-                                    );
+                                    let errorMessage =
+                                        '<div class="alert alert-danger">';
+
+                                    try {
+                                        const response = JSON.parse(jqXHR
+                                            .responseText);
+
+                                        // Display main message if available
+                                        if (response.message) {
+                                            errorMessage +=
+                                                `<p>${response.message}</p>`;
+                                        }
+
+                                        if (response.errors) {
+                                            errorMessage += '<ul>';
+                                            for (const field in response.errors) {
+                                                response.errors[field].forEach(
+                                                    error => {
+                                                        errorMessage +=
+                                                            `<li>${error}</li>`;
+                                                    });
+                                            }
+                                            errorMessage += '</ul>';
+                                        }
+
+                                    } catch (e) {
+                                        errorMessage +=
+                                            'Something went wrong! Please try again later.';
+                                    }
+
+                                    errorMessage += '</div>';
+                                    $('#adviserFormMsg').html(errorMessage);
                                 }
                             });
                         }

@@ -323,49 +323,50 @@
                 });
             });
 
+            let rfidTimeout;
+
             $('#rfid_no').on('input', function() {
+                clearTimeout(rfidTimeout);
                 let rfid_no = $(this).val().trim();
-                if (rfid_no.length >= 7) { // Adjust based on RFID tag length
-                    $.ajax({
-                        method: 'POST',
-                        url: '{{ route('attendances.processRfid') }}',
-                        data: {
-                            rfid_no: rfid_no,
-                            subject_load_id: subjectLoadId,
-                            attendance_date: attendanceDate,
-                        },
-                        dataType: 'JSON',
-                        success: function(response) {
-                            $('#rfid_no').val('').focus();
-                            if (response.valid) {
-                                $('#table2').bootstrapTable('refresh');
-                                $('#table1').bootstrapTable('refresh');
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Success',
-                                    text: response.msg,
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                });
-                            } else {
+
+                if (rfid_no.length >= 7) {
+                    rfidTimeout = setTimeout(function() {
+                        $.ajax({
+                            method: 'POST',
+                            url: '{{ route('attendances.processRfid') }}',
+                            data: {
+                                rfid_no: rfid_no,
+                                subject_load_id: subjectLoadId,
+                                attendance_date: attendanceDate,
+                            },
+                            dataType: 'JSON',
+                            success: function(response) {
+                                $('#rfid_no').val('').focus();
+                                if (response.valid) {
+                                    $('#table2').bootstrapTable('refresh');
+                                    $('#table1').bootstrapTable('refresh');
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'Success',
+                                        text: response.msg,
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    });
+                                }
+                            },
+                            error: function(jqXHR) {
+                                $('#rfid_no').val('').focus();
+                                const errorMsg = jqXHR.responseJSON?.message ||
+                                    jqXHR.responseJSON?.msg ||
+                                    'Failed to process RFID';
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error',
-                                    text: response.msg
+                                    text: errorMsg
                                 });
                             }
-                        },
-                        error: function(jqXHR) {
-                            $('#rfid_no').val('').focus();
-                            const errorMsg = jqXHR.responseJSON?.msg ||
-                                'Failed to process RFID';
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: errorMsg
-                            });
-                        }
-                    });
+                        });
+                    }, 300);
                 }
             });
 

@@ -161,8 +161,6 @@ class AttendanceService
     {
         Log::info('Generating attendance', ['subject_load_id' => $subjectLoadId, 'attendance_date' => $attendanceDate]);
         try {
-            Log::info('Generating attendance', ['subject_load_id' => $subjectLoadId, 'attendance_date' => $attendanceDate]);
-
             $subjectLoad = TeacherSubjectLoad::findOrFail($subjectLoadId);
             $schoolYear = SchoolYear::where('current', true)->firstOrFail();
 
@@ -170,10 +168,18 @@ class AttendanceService
                 $query->where('grade_level', $subjectLoad->grade_level)
                     ->where('section', $subjectLoad->section)
                     ->where('school_year_id', $schoolYear->id);
-            })->get();
+            })
+                ->whereExists(function ($query) {
+                    $query->select(DB::raw(1))
+                        ->from('students')
+                        ->whereColumn('students.id', 'student_statuses.student_id');
+                })
+                ->get();
+
+            Log::info('Retrieved students', ['student_ids' => $students->pluck('student_id')->toArray()]);
 
             if ($students->isEmpty()) {
-                throw new Exception('No students found for this subject load’s section.');
+                throw new Exception('No valid students found for this subject load’s section. Ensure students exist in the students table.');
             }
 
             $existingCount = Attendance::where('subject_load_id', $subjectLoadId)
@@ -189,8 +195,13 @@ class AttendanceService
 
             DB::transaction(function () use ($students, $subjectLoadId, $attendanceDate, $schoolYear) {
                 foreach ($students as $student) {
+                    Log::info('Creating attendance record for student', [
+                        'student_id' => $student->student_id, // Ensure student_id is used correctly
+                        'subject_load_id' => $subjectLoadId,
+                        'attendance_date' => $attendanceDate
+                    ]);
                     Attendance::create([
-                        'student_id' => $student->id,
+                        'student_id' => $student->student_id, // Use student_id from StudentStatus
                         'school_year_id' => $schoolYear->id,
                         'attendance_date' => $attendanceDate,
                         'status' => 'absent', // Default to absent
@@ -350,12 +361,21 @@ class AttendanceService
     public function processRfidAttendance(array $data)
     {
         try {
-            Log::info('Processing RFID attendance', ['rfid_no' => $data['rfid_no']]);
+            Log::info('Processing RFID attendance', [
+                'rfid_no' => $data['rfid_no'],
+                'subject_load_id' => $data['subject_load_id'],
+                'attendance_date' => $data['attendance_date'],
+            ]);
+
+            // Validate RFID input
+            if (empty($data['rfid_no'])) {
+                throw new Exception('RFID number is empty or invalid.');
+            }
 
             // Map RFID tag to student
-            $student = Student::where('rfid_no', $data['rfid_no'])->first();
+            $student = Student::whereRaw('TRIM(LOWER(rfid_no)) = ?', [trim(strtolower($data['rfid_no']))])->first();
             if (!$student) {
-                throw new Exception('Student not found for RFID tag.');
+                throw new Exception('No student is registered with the RFID tag: ' . $data['rfid_no']);
             }
 
             // Get current school year

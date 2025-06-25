@@ -86,8 +86,6 @@ class AttendanceController extends Controller
     public function generate(Request $request)
     {
         try {
-
-            // Format attendance_date to Y-m-d if possible
             if ($request->attendance_date) {
                 $request->merge([
                     'attendance_date' => date('Y-m-d')

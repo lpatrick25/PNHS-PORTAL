@@ -95,7 +95,7 @@ class ClassRecordService
             $students = Student::whereHas('currentStatus.adviser', function ($query) use ($subjectLoad, $schoolYear) {
                 $query->where('grade_level', $subjectLoad->grade_level)
                     ->where('section', $subjectLoad->section);
-                    // ->where('school_year_id', $schoolYear->id);
+                // ->where('school_year_id', $schoolYear->id);
             })->with(['classRecords' => function ($query) use ($subjectLoadId, $quarter) {
                 $query->where('teacher_subject_load_id', $subjectLoadId)
                     ->where('quarter', $quarter);
@@ -367,6 +367,18 @@ class ClassRecordService
             if ($currentIndex > 0) {
                 $previousQuarter = $quarters[$currentIndex - 1];
 
+                // Check if records exist for the previous quarter
+                $previousQuarterCount = ClassRecord::where('teacher_subject_load_id', $subjectLoadId)
+                    ->where('quarter', $previousQuarter)
+                    ->count();
+
+                if ($previousQuarterCount === 0) {
+                    return [
+                        'valid' => false,
+                        'msg' => "Cannot generate records for {$quarter}. No class records found for {$previousQuarter}.",
+                    ];
+                }
+
                 // Verify that all students have graded Quarterly Assessment in the previous quarter
                 $ungradedCount = ClassRecord::where('teacher_subject_load_id', $subjectLoadId)
                     ->where('quarter', $previousQuarter)
@@ -428,6 +440,7 @@ class ClassRecordService
             Log::error('Failed to generate class records', [
                 'subject_load_id' => $subjectLoadId,
                 'quarter' => $quarter,
+                'entity' => 'ClassRecord',
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
